@@ -39,10 +39,6 @@ import com.logginghub.utils.FormattedRuntimeException;
 import com.logginghub.utils.HexDump;
 import com.logginghub.utils.Logger;
 import com.logginghub.utils.NotImplementedException;
-import com.logginghub.utils.StackSnapshot;
-import com.logginghub.utils.StackStrobeRequest;
-import com.logginghub.utils.StackTrace;
-import com.logginghub.utils.StackTraceItem;
 
 public class LoggingMessageCodex {
 
@@ -104,11 +100,6 @@ public class LoggingMessageCodex {
 
             registerType(EventSubscriptionRequestMessage.class, 16);
             registerType(EventSubscriptionResponseMessage.class, 17);
-
-            registerType(StackSnapshot.class, 18);
-            registerType(StackTrace.class, 19);
-            registerType(StackTraceItem.class, 20);
-            registerType(StackStrobeRequest.class, 21);
 
             registerType(DataStructure.class, 22);
             registerType(DataElement.class, 23);

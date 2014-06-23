@@ -456,7 +456,6 @@ public class StringUtils {
     }
 
     public static String repeat(String string, int times) {
-        Is.greaterThanOrZero(times, "You can't repeat a string a negative number of times ({})", times);
         StringBuilder builder = new StringBuilder(string.length() * times);
         for (int i = 0; i < times; i++) {
             builder.append(string);
