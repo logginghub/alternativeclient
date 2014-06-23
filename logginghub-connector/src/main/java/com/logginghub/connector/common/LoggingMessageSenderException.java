@@ -1,30 +1,21 @@
 package com.logginghub.connector.common;
 
-public class LoggingMessageSenderException extends Exception
-{
+public class LoggingMessageSenderException extends Exception {
 
-    public LoggingMessageSenderException()
-    {
+    public LoggingMessageSenderException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    public LoggingMessageSenderException(String message, Throwable cause)
-    {
+    public LoggingMessageSenderException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
-    public LoggingMessageSenderException(String message)
-    {
+    public LoggingMessageSenderException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
-    public LoggingMessageSenderException(Throwable cause)
-    {
+    public LoggingMessageSenderException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

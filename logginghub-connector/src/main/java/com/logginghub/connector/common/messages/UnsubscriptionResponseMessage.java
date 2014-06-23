@@ -1,21 +1,21 @@
 package com.logginghub.connector.common.messages;
 
-import java.io.Serializable;
-
 import com.logginghub.connector.common.LoggingMessage;
+import com.logginghub.sof.SerialisableObject;
+import com.logginghub.sof.SofException;
+import com.logginghub.sof.SofReader;
+import com.logginghub.sof.SofWriter;
 
-public class UnsubscriptionResponseMessage implements LoggingMessage, Serializable
-{
-    public UnsubscriptionResponseMessage()
-    {
-        
+public class UnsubscriptionResponseMessage implements LoggingMessage, SerialisableObject {
+    public UnsubscriptionResponseMessage() {
+
     }
 
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public String toString()
-    {
+    @Override public String toString() {
         return "[UnsubscriptionResponseMessage]";
     }
+
+    public void read(SofReader reader) throws SofException {}
+
+    public void write(SofWriter writer) throws SofException {}
 }

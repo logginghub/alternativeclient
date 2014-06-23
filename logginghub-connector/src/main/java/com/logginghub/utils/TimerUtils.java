@@ -27,14 +27,16 @@ public class TimerUtils {
         TimerTask task = new TimerTask() {
             public void run() {
                 try {
+                    // NOSONAR
                     runnable.run();
+                    // NOSONAR
                 }
-                catch (Throwable t) {
+                catch (Error error) {
+                    exceptionPolicy.handle(error, "Error caught running timed runnable");
+                    throw error;
+                }
+                catch (Exception t) {
                     exceptionPolicy.handle(t, "Exception caught running timed runnable");
-                    if (t instanceof Error) {
-                        Error error = (Error) t;
-                        throw error;                        
-                    }
                 }
             }
         };
@@ -86,6 +88,7 @@ public class TimerUtils {
         once(amount, units, new Runnable() {
             public void run() {
                 Logger.getAnonymousLogger().warning("Kill JVM timer has fired");
+                // NOSONAR
                 System.exit(0);
             }
         });

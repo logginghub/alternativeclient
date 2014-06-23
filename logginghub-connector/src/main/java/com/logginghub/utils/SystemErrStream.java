@@ -4,7 +4,7 @@ public class SystemErrStream implements LoggerStream {
     public static int gapThreshold = 250;
     private long lastLogTime = 0;
     private LogEventFormatter formatter = new SingleLineStreamFormatter();
-    public void onNewLogEvent(LogEvent event) {
+    public void onNewLogEvent(LoggerEvent event) {
         long now = System.currentTimeMillis();
         if(now - lastLogTime > gapThreshold) {
             System.err.println();

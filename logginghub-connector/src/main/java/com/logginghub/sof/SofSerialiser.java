@@ -11,6 +11,8 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 import com.logginghub.utils.Destination;
+import com.logginghub.utils.FileUtils;
+import com.logginghub.utils.FormattedRuntimeException;
 import com.logginghub.utils.Logger;
 import com.logginghub.utils.ReflectionUtils;
 
@@ -53,27 +55,7 @@ public class SofSerialiser {
         // encoding scheme
         // This is pointless.
 
-        // Take into account the size of the field headers for each version approach
-        // int lengthWithVersion1 = encodedLength;
-
-        // Add on the extra bytes for the 2 byte encoding
-        // int lengthWithVersion2 = encodedLength + (fieldCount * 2 * 1);
-
-        // Add on the extra bytes for the 4 byte encoding
-        // int lengthWithVersion4 = encodedLength + (fieldCount * 2 * 3);
-
         int version = 1;
-        // if (lengthWithVersion1 < 255 && fieldCount < 255 && typeID < 255) {
-        // version = SofSerialiser.Version_One_Byte;
-        // }
-        // else if (lengthWithVersion2 < 65535 && fieldCount < 65535 && typeID < 65535) {
-        // version = SofSerialiser.Version_Two_Bytes;
-        // encodedLength = lengthWithVersion2;
-        // }
-        // else {
-        // version = SofSerialiser.Version_Four_Bytes;
-        // encodedLength = lengthWithVersion4;
-        // }
 
         byte[] encoded = null;
         if (configuration.isCompressed()) {
@@ -145,12 +127,12 @@ public class SofSerialiser {
                 int count = decompressor.inflate(buf);
                 bos.write(buf, 0, count);
             }
-            catch (DataFormatException e) {}
+            catch (DataFormatException e) {
+                throw new FormattedRuntimeException(e, "Failed to decompress byte array");
+            }
         }
-        try {
-            bos.close();
-        }
-        catch (IOException e) {}
+        
+        FileUtils.closeQuietly(bos);
 
         byte[] decompressedData = bos.toByteArray();
         return decompressedData;
@@ -180,21 +162,21 @@ public class SofSerialiser {
 
     public static SofHeader readHeader(ReaderAbstraction reader) throws IOException, SofException {
         long start = reader.getPosition();
-        
+
         SofHeader header = new SofHeader();
         header.version = reader.readByte();
-        if(header.version != 1) {
+        if (header.version != 1) {
             throw new SofException("Illegal version number in header : {}", header.version);
         }
-        
+
         header.flags = reader.readByte();
         header.type = SofSerialiser.readInt(reader);
         header.fieldCount = SofSerialiser.readInt(reader);
         header.length = SofSerialiser.readInt(reader);
- 
+
         long end = reader.getPosition();
         header.headerLength = (int) (end - start);
-        
+
         return header;
     }
 
@@ -416,36 +398,30 @@ public class SofSerialiser {
     }
 
     public static long readLong(ReaderAbstraction in) throws IOException {
-        long start = in.getPosition();
         int b = in.readUnsignedByte();
-        long result = b & 0x3F; /*
-                                 * load the first bit of data, masking out the sign and continuation
-                                 * bits
-                                 */
+        long result = b & 0x3F; // load the first bit of data, masking out the sign and continuation
+                                // bits
+
         int cBits = 6;
-        boolean fNeg = (b & 0x40) != 0; /* check for the sign bit */
-        while ((b & 0x80) != 0) { /* while the current byte has the continuation flag set */
+        boolean fNeg = (b & 0x40) != 0; // check for the sign bit
+        while ((b & 0x80) != 0) { // while the current byte has the continuation flag set
             b = in.readUnsignedByte();
             long portion = b & 0x7F;
             portion = portion << cBits;
-            result |= portion; /*
-                                * set the portion of hte result with the curren byte masked to
-                                * remove the continuation bit. First shift is 6 as that includes the
-                                * sign. Future shifts increment by 7 bits
-                                */
+            result |= portion; // set the portion of hte result with the curren byte masked to
+                               // remove the continuation bit. First shift is 6 as that includes the
+                               // sign. Future shifts increment by 7 bits
+
             cBits += 7;
         }
         if (fNeg) {
             result = ~result;
         }
 
-        long length = in.getPosition() - start;
-        // logger.fine("Read varint '{}' from {} bytes | position {}", result, length, start);
         return result;
     }
 
     public static int readInt(ReaderAbstraction in) throws IOException {
-        long start = in.getPosition();
         int b = in.readUnsignedByte();
         int n = b & 0x3F;
         int cBits = 6;
@@ -455,12 +431,11 @@ public class SofSerialiser {
             n |= ((b & 0x7F) << cBits);
             cBits += 7;
         }
+
         if (fNeg) {
             n = ~n;
         }
 
-        long length = in.getPosition() - start;
-        // logger.fine("Read varint '{}' from {} bytes | position {}", n, length, start);
         return n;
     }
 
@@ -471,21 +446,16 @@ public class SofSerialiser {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         StreamReaderAbstraction reader = new StreamReaderAbstraction(bais, bytes.length);
         try {
-            int version = reader.readByte();
-            int flags = reader.readByte();
-            int type = SofSerialiser.readInt(reader);
-            int fieldCount = SofSerialiser.readInt(reader);
-            int length = SofSerialiser.readInt(reader);
-
-            // logger.fine("Decoded header : version='{}' flags='{}' type='{}' fieldCount='{}' length='{}'",
-            // version, flags, type, fieldCount, length);
+            // Read the header
+            reader.readByte();
+            reader.readByte();
+            SofSerialiser.readInt(reader);
+            SofSerialiser.readInt(reader);
+            SofSerialiser.readInt(reader);
 
             while (!found && reader.hasMore()) {
                 int fieldIndex = SofSerialiser.readInt(reader);
                 int fieldType = SofSerialiser.readInt(reader);
-
-                // logger.fine("Decoded field : fieldIndex='{}' fieldType='{}'", fieldIndex,
-                // sofConfiguration.resolveField(fieldType));
 
                 if (fieldIndex == field) {
                     extract = decodeField(fieldType, reader, sofConfiguration);
@@ -494,11 +464,7 @@ public class SofSerialiser {
                 else {
                     skipField(fieldType, reader);
                 }
-
-                // logger.fine("Reader is now : {}", reader);
-
             }
-
         }
         catch (IOException e) {
             throw new SofException(e);

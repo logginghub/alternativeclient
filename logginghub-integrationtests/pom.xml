@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.logginghub</groupId>
+        <artifactId>logginghub-parent</artifactId>
+        <version>1.3.14</version>
+    </parent>
+
+    <artifactId>logginghub-integrationtests</artifactId>
+    <name>LoggingHub Integration Tests</name>
+    <description>The connector module contains integration tests for LoggingHub</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.logginghub</groupId>
+            <artifactId>logginghub-connector</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.vertexlabs</groupId>
+            <artifactId>vl-logging</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <scm>
+        <!-- TODO : sort these out -->
+        <connection>https://github.com/LoggingHub/core</connection>
+        <url>https://github.com/LoggingHub/core</url>
+    </scm>
+
+
+</project>

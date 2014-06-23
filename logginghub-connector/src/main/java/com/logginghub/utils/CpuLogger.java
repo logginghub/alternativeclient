@@ -215,7 +215,7 @@ public abstract class CpuLogger {
 
     protected abstract void log(String message);
 
-    public long getJVMCpuTime() {
+    @SuppressWarnings("restriction") public long getJVMCpuTime() {
         OperatingSystemMXBean bean = ManagementFactory.getOperatingSystemMXBean();
         if (!(bean instanceof com.sun.management.OperatingSystemMXBean)) return 0L;
         return ((com.sun.management.OperatingSystemMXBean) bean).getProcessCpuTime();

@@ -15,12 +15,6 @@ public class LogEventCodex extends AbstractCodex {
     private final static byte versionOne = 1;
     private final static int lengthPlaceHolder = 0;
 
-    /**
-     * If we get asked to decode anything bigger than this then assume something
-     * has gone wrong...
-     */
-    private static final int stringSizeCutoff = Integer.getInteger("logEventCodex.stringSizeCutoff", 10 * 1024 * 1024);
-
     public static LogEvent decode(ByteBuffer buffer) throws PartialMessageException {
         logger.finer("Attempting to decode log event from buffer '{}'", buffer);
 
@@ -38,8 +32,6 @@ public class LogEventCodex extends AbstractCodex {
                 int payloadStart = buffer.position();
 
                 logger.finer("Length decoded '{}', buffer state is '{}'", length, buffer);
-
-                BufferDebugger bd = new BufferDebugger(buffer);
 
                 if (length == 0) {
                     throw new RuntimeException(String.format("Invalid event size '%d'", length));

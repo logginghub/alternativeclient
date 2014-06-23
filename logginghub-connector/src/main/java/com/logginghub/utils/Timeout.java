@@ -13,7 +13,11 @@ public class Timeout {
         this.units = units;
     }
 
-    public static Timeout defaultTimeout = new Timeout(5, TimeUnit.SECONDS);
+    private static final Timeout defaultTimeout = new Timeout(5, TimeUnit.SECONDS);
+    
+    public static Timeout getDefaultTimeout() {
+        return defaultTimeout;
+    }
 
     public long getTime() {
         return time;

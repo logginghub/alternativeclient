@@ -19,29 +19,22 @@ import com.logginghub.utils.Source;
  */
 public class AbstractLogEventSource implements LogEventSource, Source<LogEvent> {
 
-    // public enum ExceptionPolicy {
-    // RethrowOnAny,
-    // SendToHandler,
-    // Ignore,
-    // SystemOut
-    // }
-
     private Multiplexer<LogEvent> logEventMultiplexer = new Multiplexer<LogEvent>();
-    private List<LogEventListener> m_logEventListeners = new CopyOnWriteArrayList<LogEventListener>();
+    private List<LogEventListener> logEventListeners = new CopyOnWriteArrayList<LogEventListener>();
     private ExceptionPolicy exceptionPolicy = new ExceptionPolicy(Policy.RethrowOnAny);
 
     public void addLogEventListener(LogEventListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener was null");
         }
-        m_logEventListeners.add(listener);
+        logEventListeners.add(listener);
     }
 
     public void removeLogEventListener(LogEventListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Listener was null");
         }
-        m_logEventListeners.remove(listener);
+        logEventListeners.remove(listener);
     }
 
     protected void fireNewLogEvent(LogEvent event) {
@@ -49,7 +42,7 @@ public class AbstractLogEventSource implements LogEventSource, Source<LogEvent> 
             throw new IllegalArgumentException("Event was null");
         }
 
-        for (LogEventListener listener : m_logEventListeners) {
+        for (LogEventListener listener : logEventListeners) {
             try {
                 listener.onNewLogEvent(event);
             }

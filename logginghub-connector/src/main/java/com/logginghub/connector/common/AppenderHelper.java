@@ -1,6 +1,7 @@
 package com.logginghub.connector.common;
 
 import java.io.FileNotFoundException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -8,16 +9,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.logginghub.connector.common.SocketConnection.SlowSendingPolicy;
-import com.logginghub.connector.common.messages.ChannelMessage;
-import com.logginghub.modules.StackCaptureConfiguration;
-import com.logginghub.modules.StackCaptureModule;
+import com.logginghub.connector.common.messages.LogEventMessage;
 import com.logginghub.utils.CpuLogger;
-import com.logginghub.utils.DataStructure;
-import com.logginghub.utils.Destination;
 import com.logginghub.utils.GCWatcher;
 import com.logginghub.utils.HeapLogger;
 import com.logginghub.utils.Logger;
-import com.logginghub.utils.NetUtils;
+import com.logginghub.utils.NotImplementedException;
 import com.logginghub.utils.RunnableWorkerThread;
 import com.logginghub.utils.StringUtils;
 import com.logginghub.utils.ThreadUtils;
@@ -40,11 +37,8 @@ public class AppenderHelper {
     private static final Logger logger = Logger.getLoggerFor(AppenderHelper.class);
     private AppenderHelperCustomisationInterface customisationInterface;
 
-    // private SocketPublisher m_publisher = new SocketPublisher();
     private SocketClient socketClient;
     private String sourceApplication = "<unknown source application>";
-    // private LinkedList<DetailsSnapshot> eventsToBeDispatched = new
-    // LinkedList<DetailsSnapshot>();
 
     private BlockingDeque eventsToBeDispatched = new LinkedBlockingDeque();
     private long failureDelay = 50;
@@ -61,29 +55,12 @@ public class AppenderHelper {
     private int maxDispatchQueueSize = 1000;
     private int pid = -1;
 
-    private boolean stackTraceModuleEnabled = true;
-    private String stackTraceModuleBroadcastInterval = "0";
-
-    private Destination<DataStructure> telemetryListener = new Destination<DataStructure>() {
-        public void send(DataStructure t) {
-            try {
-                if (socketClient != null && socketClient.isConnected()) {
-                    socketClient.send(new ChannelMessage(Channels.telemetryUpdates, t));
-                }
-            }
-            catch (LoggingMessageSenderException e) {
-                // TODO : should we tell anyone about this?
-            }
-        }
-    };
-
     /**
      * A testability feature: this allows the test to get notifications when events are published
      * asynchronously.
      */
     private PublishingListener publishingListener = null;
     private RunnableWorkerThread dispatcherThread;
-    private TelemetryHelper telemetryClient = new TelemetryHelper();
     private String telemetry;
     private TimeProvider timeProvider = null;
 
@@ -93,14 +70,10 @@ public class AppenderHelper {
     private double failureDelayMultiplier = 2;
     private long failureDelayMaximum = TimeUtils.minutes(1);
     private int discards;
-    private StackCaptureModule stackTraceModule;
 
     public AppenderHelper(String name, AppenderHelperCustomisationInterface ahci) {
         customisationInterface = ahci;
         socketClient = new SocketClient(name);
-
-        // LogManager manager = LogManager.getLogManager();
-        // manager.addPropertyChangeListener(this);
 
         // Set the connection to throw old messages away if the write side of
         // the connection starts blocking up
@@ -138,41 +111,40 @@ public class AppenderHelper {
             throw new RuntimeException("Failed to get local host", e1);
         }
 
-        // Make a cautious attempt at getting the pid - we dont want things to
-        // blow up if this doesn't work though
-        try {
-            pid = getPID();
-            GlobalLoggingParameters.pid = pid;
-        }
-        catch (Throwable t) {
-            t.printStackTrace();
-        }
-
-        stackTraceModule = new StackCaptureModule(null, null);
+        pid = getPID();
+        GlobalLoggingParameters.getInstance().setPid(pid);
     }
 
-    public final static int getPID() {
+    @SuppressWarnings("restriction") public final static int getPID() {
         try {
             java.lang.management.RuntimeMXBean runtime = java.lang.management.ManagementFactory.getRuntimeMXBean();
             java.lang.reflect.Field jvm = runtime.getClass().getDeclaredField("jvm");
             jvm.setAccessible(true);
             sun.management.VMManagement mgmt = (sun.management.VMManagement) jvm.get(runtime);
-            java.lang.reflect.Method pid_method = mgmt.getClass().getDeclaredMethod("getProcessId");
-            pid_method.setAccessible(true);
+            java.lang.reflect.Method pidMethod = mgmt.getClass().getDeclaredMethod("getProcessId");
+            pidMethod.setAccessible(true);
 
-            int pid = (Integer) pid_method.invoke(mgmt);
-            return pid;
+            return (Integer) pidMethod.invoke(mgmt);
         }
-
-        catch (Exception e) {
+        catch (InvocationTargetException e) {
+            return -1;
+        }
+        catch (IllegalArgumentException e) {
+            return -1;
+        }
+        catch (IllegalAccessException e) {
+            return -1;
+        }
+        catch (SecurityException e) {
+            return -1;
+        }
+        catch (NoSuchFieldException e) {
+            return -1;
+        }
+        catch (NoSuchMethodException e) {
             return -1;
         }
     }
-
-    // public void setCustomisationInterface(AppenderHelperCustomisationInterface
-    // customisationInterface) {
-    // this.customisationInterface = customisationInterface;
-    // }
 
     private void runDispatchLoop() throws InterruptedException {
         EventSnapshot snapshot = (EventSnapshot) eventsToBeDispatched.takeFirst();
@@ -197,10 +169,7 @@ public class AppenderHelper {
                 eventsToBeDispatched.putFirst(snapshot);
 
                 if (!isDontThrowExceptionsIfHubIsntUp()) {
-                    String message = StringUtils.format("Couldnt connect to any hubs; waiting {} ms until the next connection attempt",
-                                                        currentFailureDelay);
-                    LoggingMessageSenderException topLevel = new LoggingMessageSenderException(message, ftse);
-                    topLevel.printStackTrace();
+                    logger.info("Couldnt connect to any hubs; waiting {} ms until the next connection attempt", currentFailureDelay);
                 }
 
                 // Do the failure delay sleep
@@ -277,12 +246,10 @@ public class AppenderHelper {
     }
 
     public void addConnectionPoint(InetSocketAddress inetSocketAddress) {
-        // m_publisher.addConnectionPoint(inetSocketAddress);
         socketClient.addConnectionPoint(inetSocketAddress);
     }
 
     public void removeConnectionPoint(InetSocketAddress inetSocketAddress) {
-        // m_publisher.removeConnectionPoint(inetSocketAddress);
         socketClient.removeConnectionPoint(inetSocketAddress);
     }
 
@@ -308,8 +275,7 @@ public class AppenderHelper {
 
         this.sourceApplication = actualValue;
 
-        telemetryClient.setSourceApplication(actualValue);
-        GlobalLoggingParameters.applicationName = actualValue;
+        GlobalLoggingParameters.getInstance().setApplicationName(actualValue);
     }
 
     public String getSourceApplication() {
@@ -317,8 +283,8 @@ public class AppenderHelper {
     }
 
     public void setHost(String host) {
-        host = StringUtils.environmentReplacement(host);
-        String[] split = host.split(":");
+        String replacedHost = StringUtils.environmentReplacement(host);
+        String[] split = replacedHost.split(":");
 
         String hostname = split[0];
         int port = VLPorts.getSocketHubDefaultPort();
@@ -326,7 +292,7 @@ public class AppenderHelper {
             port = Integer.parseInt(split[1]);
         }
 
-        GlobalLoggingParameters.destination = hostname;
+        GlobalLoggingParameters.getInstance().setDestination(hostname);
 
         addConnectionPoint(new InetSocketAddress(hostname, port));
     }
@@ -334,35 +300,14 @@ public class AppenderHelper {
     public synchronized void setPublishMachineTelemetry(boolean publishMachineTelemetry) {
         this.publishMachineTelemetry = publishMachineTelemetry;
 
-        if (publishMachineTelemetry) {
-//            MachineTelemetryGenerator machineTelemetryGenerator = telemetryClient.startMachineTelemetryGenerator();
-//            machineTelemetryGenerator.getDataStructureMultiplexer().addDestination(telemetryListener);
-        }
+        throw new NotImplementedException("The telemetry bits have been removed in this version");
     }
 
-    // TODO : refactor this to be a boolean? Its a bit daft just having it as a random method that
-    // just needs to have /something/ passed in.
     public synchronized void setTelemetry(String connectionString) {
-        // connectionString = StringUtils.environmentReplacement(connectionString);
-        // this.telemetry = connectionString;
-        // if (telemetryClient == null) {
-        //
-        //
-        // if (publishMachineTelemetry) {
-        // MachineTelemetryGenerator machineTelemetryGenerator =
-        // telemetryClient.startMachineTelemetryGenerator();
-        // machineTelemetryGenerator.getDataStructureMultiplexer().addDestination(listener);
-        // }
-        //
-        // if (publishProcessTelemetry) {
-        // ProcessTelemetryGenerator processTelemetryGenerator =
-        // telemetryClient.startProcessTelemetryGenerator(sourceApplication);
-        // processTelemetryGenerator.getDataStructureMultiplexer().addDestination(listener);
-        // }
-        // }
+        throw new NotImplementedException("The telemetry bits have been removed in this version");
     }
 
-    public String getTelemetry() {
+    public synchronized String getTelemetry() {
         return telemetry;
     }
 
@@ -370,8 +315,7 @@ public class AppenderHelper {
         this.publishProcessTelemetry = publishProcessTelemetry;
 
         if (publishProcessTelemetry) {
-//            ProcessTelemetryGenerator processTelemetryGenerator = telemetryClient.startProcessTelemetryGenerator(sourceApplication);
-//            processTelemetryGenerator.getDataStructureMultiplexer().addDestination(telemetryListener);
+            throw new NotImplementedException("The telemetry bits have been removed in this version");
         }
     }
 
@@ -429,7 +373,7 @@ public class AppenderHelper {
                 gcWatcher.start(path);
             }
             catch (FileNotFoundException e) {
-                e.printStackTrace();
+                logger.warn(e, "Failed to start gc watcher in path '{}'", path);
             }
         }
     }
@@ -443,29 +387,11 @@ public class AppenderHelper {
     }
 
     public synchronized void start() {
-
-        if (stackTraceModuleEnabled) {
-
-            StackCaptureConfiguration configuration = new StackCaptureConfiguration();
-            configuration.setSnapshotInterval(stackTraceModuleBroadcastInterval);
-            configuration.setHost(NetUtils.getLocalHostname());
-            configuration.setEnvironment("environment");
-            configuration.parseApplicationName(sourceApplication);
-
-            // TODO : fill in other bits
-
-            stackTraceModule.setChannelSubscriptions(socketClient);
-            stackTraceModule.setLoggingMessageSender(socketClient);
-            stackTraceModule.configure(configuration, null);
-            stackTraceModule.start();
-        }
-
+        
     }
 
     public synchronized void stop() {
-        if (stackTraceModule != null) {
-            stackTraceModule.stop();
-        }
+        
     }
 
     public synchronized void close() {
@@ -497,10 +423,6 @@ public class AppenderHelper {
         if (gcWatcher != null) {
             gcWatcher.stop();
             logger.debug("Stopped gc watcher thread");
-        }
-
-        if (telemetryClient != null) {
-            telemetryClient.stop();
         }
 
         logger.debug("Closed appender helper.");
@@ -540,7 +462,9 @@ public class AppenderHelper {
                 try {
                     Thread.sleep(100);
                 }
-                catch (InterruptedException e) {}
+                catch (InterruptedException e) {
+
+                }
             }
         }
     }
@@ -581,11 +505,9 @@ public class AppenderHelper {
                 }
 
                 boolean okToThrow = true;
-                if (e.getCause() instanceof ConnectorException) {
-                    if (isDontThrowExceptionsIfHubIsntUp()) {
-                        // Fine, we have been told to supress these
-                        okToThrow = false;
-                    }
+                if (e.getCause() instanceof ConnectorException && isDontThrowExceptionsIfHubIsntUp()) {
+                    // Fine, we have been told to supress these
+                    okToThrow = false;
                 }
 
                 if (okToThrow) {
@@ -616,23 +538,4 @@ public class AppenderHelper {
         return socketClient;
     }
 
-    public void setStackTraceModuleBroadcastInterval(String stackTraceModuleBroadcastInterval) {
-        this.stackTraceModuleBroadcastInterval = stackTraceModuleBroadcastInterval;
-    }
-
-    public String getStackTraceModuleBroadcastInterval() {
-        return stackTraceModuleBroadcastInterval;
-    }
-
-    public void setStackTraceModuleEnabled(boolean stackTraceModuleEnabled) {
-        this.stackTraceModuleEnabled = stackTraceModuleEnabled;
-    }
-
-    public boolean isStackTraceModuleEnabled() {
-        return stackTraceModuleEnabled;
-    }
-
-    public StackCaptureModule getStackTraceModule() {
-        return stackTraceModule;
-    }
 }

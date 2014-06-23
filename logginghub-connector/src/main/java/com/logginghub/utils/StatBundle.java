@@ -80,7 +80,7 @@ public class StatBundle {
     }
 
     public void startPerSecond(final Logger logger) {
-        final LogEvent context = logger.getCallerContext();
+        final LoggerEvent context = logger.getCallerContext();
 
         this.timer = TimerUtils.everySecond("StatsTimer", new Runnable() {
             public void run() {

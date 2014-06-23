@@ -14,7 +14,7 @@ public class SingleLineStreamFormatter implements LogEventFormatter {
     private MessageFormat formatter;
     private boolean stripClass;
 
-    private Object args[] = new Object[1];
+    private Object[] args = new Object[1];
 
     private String lineSeparator = (String) System.getProperty("line.separator");
 
@@ -56,7 +56,7 @@ public class SingleLineStreamFormatter implements LogEventFormatter {
         return stripClass;
     }
 
-    public String format(LogEvent record) {
+    public String format(LoggerEvent record) {
         StringBuilder sb = new StringBuilder();
 
         dat.setTime(record.getLocalCreationTimeMillis());

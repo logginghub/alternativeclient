@@ -7,46 +7,30 @@ import java.util.logging.Level;
  * 
  * @author admin
  */
-public interface LogEvent
-{
+public interface LogEvent {
     public int getLevel();
-
     public long getSequenceNumber();
-
     public String getSourceClassName();
-
     public String getSourceMethodName();
-
     public String getMessage();
-
     public String getThreadName();
-
     public long getLocalCreationTimeMillis();
-
     public String getLoggerName();
-
     public String getSourceHost();
     public String getSourceAddress();
-
     public String getSourceApplication();
-
     public String getFormattedException();
-
     public String[] getFormattedObject();
 
     /**
-     * Return something to indicate the flavour of this event: eg Juli, Log4j
-     * etc
+     * Return something to indicate the flavour of this event: eg Juli, Log4j etc
      * 
      * @return
      */
     public String getFlavour();
 
     public String getLevelDescription();
-
     public Level getJavaLevel();
-    
     public int getPid();
-    
     public String getChannel();
 }

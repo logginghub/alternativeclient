@@ -22,15 +22,14 @@ import java.util.logging.Logger;
 public abstract class WorkerThread {
     private Thread thread;
     private volatile boolean keepRunning = false;
-    private static Logger logger = Logger.getLogger(WorkerThread.class.getName());
+    private static final Logger logger = Logger.getLogger(WorkerThread.class.getName());
     private ExceptionHandler exceptionHandler = new SystemErrExceptionHandler();
     private List<WorkerThreadListener> listeners = new CopyOnWriteArrayList<WorkerThreadListener>();
     private Object lock = new Object();
     private volatile long iterationDelay = 0;
     private volatile long preIterationDelay = 0;
-    // private long iterationElapsedTimeOverrideNanos;
     private String threadName;
-    private Timeout joinTimeout = Timeout.defaultTimeout;
+    private Timeout joinTimeout = Timeout.getDefaultTimeout();
     private boolean keepRunningOnExceptions = true;
 
     public WorkerThread(String threadName) {
@@ -152,11 +151,7 @@ public abstract class WorkerThread {
             try {
                 thread.interrupt();
                 thread.join(joinTimeout.getMillis());
-                if (thread.isAlive()) {
-                    StackTraceElement[] stackTrace = thread.getStackTrace();
-                    for (StackTraceElement stackTraceElement : stackTrace) {
-                        System.out.println(stackTraceElement);
-                    }
+                if (thread.isAlive()) {                                       
                     throw new FormattedRuntimeException("Thread failed to die within the join timeout ({} ms); thread {} is still running",
                                                         joinTimeout.getMillis(),
                                                         thread.getName());
@@ -197,10 +192,11 @@ public abstract class WorkerThread {
             if (!Thread.currentThread().isInterrupted()) {
                 long elapsed;
                 long start = System.nanoTime();
-                // iterationElapsedTimeOverrideNanos = 0;
                 try {
                     onRun();
                 }
+                // jshaw - I'm happy to catch Errors here too
+                // NOSONAR
                 catch (Throwable t) {
                     if ((t instanceof InterruptedException || (t.getCause() != null && (t.getCause() instanceof InterruptedException))) &&
                         !keepRunning()) {
@@ -209,24 +205,14 @@ public abstract class WorkerThread {
                         // it
                     }
                     else {
-                        // TODO : do we keep running on errors?
                         handleException(t);
-                        if (keepRunningOnExceptions) {
-
-                        }
-                        else {
+                        if (!keepRunningOnExceptions) {
                             keepRunning = false;
                         }
                     }
                 }
                 finally {
-                    // if (iterationElapsedTimeOverrideNanos == 0) {
                     elapsed = System.nanoTime() - start;
-                    // }
-                    // else {
-                    // elapsed = iterationElapsedTimeOverrideNanos;
-                    // }
-                    // System.out.println(elapsed / 1e6);
                 }
 
                 if (iterationDelay > 0) {
@@ -324,12 +310,6 @@ public abstract class WorkerThread {
         thread.setContextClassLoader(classLoader);
     }
 
-    // public void setIterationElapsedTimeOverrideNanos(long
-    // iterationElapsedTimeOverrideNanos) {
-    // this.iterationElapsedTimeOverrideNanos =
-    // iterationElapsedTimeOverrideNanos;
-    // }
-
     public ExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -364,19 +344,19 @@ public abstract class WorkerThread {
     public static WorkerThread everySecondDaemon(String name, Runnable runnable) {
         return executeDaemonOngoingPre(name, 1000, runnable);
     }
-    
+
     public static WorkerThread everySecond(String name, Runnable runnable) {
         return executeOngoingPre(name, 1000, runnable);
     }
-    
+
     public static WorkerThread every(String name, long interval, TimeUnit units, Runnable runnable) {
         return executeOngoingPre(name, units.toMillis(interval), runnable);
     }
-    
+
     public static WorkerThread everyNow(String name, long interval, TimeUnit units, Runnable runnable) {
         return executeOngoing(name, units.toMillis(interval), runnable);
     }
-    
+
     public static WorkerThread everyNowDaemon(String name, long interval, TimeUnit units, Runnable runnable) {
         return executeDaemonOngoing(name, units.toMillis(interval), runnable);
     }
@@ -402,7 +382,6 @@ public abstract class WorkerThread {
         return wt;
     }
 
-    
     public static WorkerThread executeOngoing(String name, long iterationDelay, final Runnable runnable) {
         WorkerThread wt = new WorkerThread(name) {
             @Override protected void onRun() throws Throwable {
@@ -425,7 +404,7 @@ public abstract class WorkerThread {
         wt.setIterationDelay(iterationDelay);
         return wt;
     }
-    
+
     public static WorkerThread executeOngoingPre(String name, long iterationDelay, final Runnable runnable) {
         WorkerThread wt = new WorkerThread(name) {
             @Override protected void onRun() throws Throwable {
@@ -436,7 +415,7 @@ public abstract class WorkerThread {
         wt.setPreIterationDelay(iterationDelay);
         return wt;
     }
-    
+
     public static WorkerThread executeDaemonOngoingPre(String name, long iterationDelay, final Runnable runnable) {
         WorkerThread wt = new WorkerThread(name) {
             @Override protected void onRun() throws Throwable {
@@ -448,7 +427,6 @@ public abstract class WorkerThread {
         wt.setPreIterationDelay(iterationDelay);
         return wt;
     }
-
 
     public void setJoinTimeout(Timeout joinTimeout) {
         this.joinTimeout = joinTimeout;
@@ -473,7 +451,5 @@ public abstract class WorkerThread {
     public boolean isKeepRunningOnExceptions() {
         return keepRunningOnExceptions;
     }
-
-    
 
 }

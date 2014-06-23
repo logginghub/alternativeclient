@@ -119,8 +119,6 @@ public abstract class AbstractCodex {
                 logger.finer(String.format("Decoding string with length '%d'", length));
             }
 
-            // System.out.println("Decoding string length " + length +
-            // " from buffer " + buffer);
             byte[] message = new byte[length];
             buffer.get(message);
             string = new String(message);

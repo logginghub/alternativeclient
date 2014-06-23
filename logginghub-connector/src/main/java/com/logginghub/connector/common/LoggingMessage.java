@@ -1,6 +1,5 @@
 package com.logginghub.connector.common;
 
-
 /**
  * Marker interface for classes that represent messages transmittable via the logging framework.
  * 
@@ -8,6 +7,4 @@ package com.logginghub.connector.common;
  */
 public interface LoggingMessage {
 
-    
-    
 }

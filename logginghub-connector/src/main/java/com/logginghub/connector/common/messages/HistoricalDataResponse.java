@@ -1,6 +1,7 @@
 package com.logginghub.connector.common.messages;
 
 import com.logginghub.connector.common.DefaultLogEvent;
+import com.logginghub.connector.common.serialisation.CompressedBlock;
 import com.logginghub.sof.SerialisableObject;
 import com.logginghub.sof.SofException;
 import com.logginghub.sof.SofReader;

@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -41,8 +42,9 @@ public class StringUtils {
         return Character.toUpperCase(method.charAt(0)) + method.substring(1);
     }
 
-    public static String[] toArray(List<String> command) {
-        return CollectionUtils.toArray(command);
+    public static String[] toArray(List<String> strings) {
+        String[] array = new String[strings.size()];
+        return strings.toArray(array);
     }
 
     public static String reflectionToString(Object object) {
@@ -72,7 +74,7 @@ public class StringUtils {
         Class<?> c = object.getClass();
         builder.append("[").append(c.getSimpleName()).append("] ");
 
-        Set<String> fieldsToInclude = ArrayUtils.toSet(fields);
+        Set<String> fieldsToInclude = toSet(fields);
 
         Field[] declaredFields = c.getDeclaredFields();
         for (Field field : declaredFields) {
@@ -101,7 +103,7 @@ public class StringUtils {
             fields = ReflectionUtils.getFieldNames(collection.iterator().next().getClass());
         }
         else {
-            fields = ArrayUtils.toList(fieldsToInclude);
+            fields = toList(fieldsToInclude);
         }
 
         int columns = fields.size();
@@ -772,7 +774,7 @@ public class StringUtils {
     }
 
     public static List<String> splitIntoWords(String trim) {
-        return CollectionUtils.toList(trim.split("\\s+"));
+        return toList(trim.split("\\s+"));
     }
 
     public static String[] splitIntoLines(String contents) {
@@ -1102,6 +1104,46 @@ public class StringUtils {
         }
         return string;
          
+    }
+
+    public static <T> void reverse(T[] array) {
+        for (int i = 0; i < array.length / 2; i++) {
+            T temp = array[i];
+            array[i] = array[array.length - i - 1];
+            array[array.length - i - 1] = temp;
+        }
+    }
+
+    public static byte[] doubleSize(byte[] readBuffer) {
+        byte[] newBuffer = new byte[readBuffer.length * 2];
+        System.arraycopy(readBuffer, 0, newBuffer, 0, readBuffer.length);
+        return newBuffer;
+    }
+
+    public static <T> Set<T> toSet(T[] array) {
+        Set<T> set = new HashSet<T>();
+        for (T t : array) {
+            set.add(t);
+        }
+
+        return set;
+    }
+
+    public static <T> List<T> toList(T[] array) {
+        List<T> list = new ArrayList<T>();
+        for (T t : array) {
+            list.add(t);
+        }
+        return list;
+    }
+    
+    public static List<String> toList(String[] split) {
+        List<String> list = new ArrayList<String>();
+        for (String string : split) {
+            list.add(string);
+        }
+        return list;
+
     }
 
 }

@@ -8,28 +8,40 @@ import javax.swing.SwingUtilities;
 
 public class Is {
 
-    public static boolean exitOnViolation = false;
+    private static boolean exitOnViolation = false;
 
-    public static void equals(byte[] a, byte[] b, String message, Object... objects) {
+    private Is() {
+
+    }
+
+    public static void setExitOnViolation(boolean exitOnViolation) {
+        Is.exitOnViolation = exitOnViolation;
+    }
+
+    public static boolean isExitOnViolation() {
+        return exitOnViolation;
+    }
+
+    public static void equal(byte[] a, byte[] b, String message, Object... objects) {
         if (!Arrays.equals(a, b)) {
             throwI(message, objects);
         }
     }
 
-    public static void equals(String actual, String expected, String message, Object... objects) {
+    public static void equal(String actual, String expected, String message, Object... objects) {
         if (!actual.equals(expected)) {
             throwI(message, objects);
         }
 
     }
-    
-    public static void equals(Object actual, Object expected, String message, Object... objects) {
+
+    public static void equal(Object actual, Object expected, String message, Object... objects) {
         if (!actual.equals(expected)) {
             throwI(message, objects);
         }
 
     }
-    
+
     public static void falseStatement(boolean value, String message, Object... objects) {
         if (value) {
             throwI(message, objects);
@@ -37,17 +49,17 @@ public class Is {
     }
 
     public static void greaterThan(double a, double b, String message, Object... objects) {
-        if(a <= b) {
+        if (a <= b) {
             throwI(message, objects);
         }
     }
-    
+
     public static void lessThan(double a, double b, String message, Object... objects) {
-        if(b < a) {
+        if (b < a) {
             throwI(message, objects);
         }
     }
-    
+
     public static void greaterThanOrZero(int value, String message, Object... objects) {
         if (value < 0) {
             throwI(message, objects);
@@ -67,7 +79,7 @@ public class Is {
     }
 
     public static void notEmpty(Collection<?> collection, String message) {
-        if (collection.size() == 0) {
+        if (collection.isEmpty()) {
             throwI(message, collection);
         }
     }
@@ -83,7 +95,7 @@ public class Is {
             throwI(message, object);
         }
     }
-    
+
     public static void notNull(Object object, String message, Object... objects) {
         if (object == null) {
             throwI(message, objects);
@@ -95,8 +107,8 @@ public class Is {
             throwI(message, string);
         }
     }
-    
-    public static void notNullOrEmpty(String string, String message,  Object... objects) {
+
+    public static void notNullOrEmpty(String string, String message, Object... objects) {
         if (string == null || string.length() == 0) {
             throwI(message, objects);
         }
@@ -124,16 +136,14 @@ public class Is {
         String formattedMessage = StringUtils.format(message, objects);
         if (exitOnViolation) {
             System.err.println(formattedMessage);
+            // NOSONAR
             System.exit(-1);
+            // NOSONAR
         }
         else {
             throw new IllegalArgumentException(formattedMessage);
         }
 
     }
-
-    
-
-    
 
 }

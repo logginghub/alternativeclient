@@ -22,7 +22,6 @@ public class ThreadUtils {
             }
             catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-//                throw new RuntimeException("Interupted during sleep", e);
             }
         }
     }
@@ -33,7 +32,6 @@ public class ThreadUtils {
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-//            throw new RuntimeException("Interupted during sleep", e);
         }
     }
 
@@ -41,7 +39,7 @@ public class ThreadUtils {
     public static void sleepNanos(long nanoDuration) throws InterruptedException {
         final long end = System.nanoTime() + nanoDuration;
         long timeLeft = nanoDuration;
-    
+
         do {
 
             if (timeLeft > SLEEP_PRECISION) {
@@ -84,13 +82,13 @@ public class ThreadUtils {
     public static void untilTrue(int amount, TimeUnit units, Callable<Boolean> callable) {
         untilTrue("", amount, units, callable);
     }
-    
+
     public static void untilTrue(Callable<Boolean> callable) {
-        untilTrue("", Timeout.defaultTimeout.getTime(), Timeout.defaultTimeout.getUnits(), callable);
+        untilTrue("", Timeout.getDefaultTimeout().getTime(), Timeout.getDefaultTimeout().getUnits(), callable);
     }
 
     public static void repeatUntilTrue(Callable<Boolean> callable) {
         untilTrue(callable);
     }
-    
+
 }

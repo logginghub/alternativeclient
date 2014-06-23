@@ -1,10 +1,12 @@
 package com.logginghub.utils;
 
-
 public class ExceptionPolicy {
     private Policy policy;
     private ExceptionHandler handler;
-    private Logger logger;
+
+    // jshaw - this isn't static final as people can set it so the logging looks like it comes from
+    // the calling class
+    private Logger logger = Logger.getLoggerFor(ExceptionPolicy.class);
 
     public ExceptionPolicy(Policy log) {
         this.policy = log;
@@ -108,10 +110,10 @@ public class ExceptionPolicy {
             }
 
         }
-        
+
     }
 
-    public void handle(Throwable e, String format, Object... params){
+    public void handle(Throwable e, String format, Object... params) {
 
         String message = StringUtils.format(format, params);
 
@@ -143,6 +145,5 @@ public class ExceptionPolicy {
 
         }
 
-        
     }
 }

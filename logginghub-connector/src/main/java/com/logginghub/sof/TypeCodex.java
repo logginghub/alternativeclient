@@ -16,21 +16,21 @@ public class TypeCodex {
 
     private static ThreadLocalBuffers temporaryBuffers = new ThreadLocalBuffers();
     private static ThreadLocalCharArrays temporaryCharArrays = new ThreadLocalCharArrays();
-    
+
     static private final CharsetEncoder encoder;
     static private final CharsetDecoder decoder;
     static private final int maxBytesPerChar;
+
     static {
-            Charset charset = Charset.forName("UTF-8");
-            encoder = charset.newEncoder();
-            maxBytesPerChar = (int)Math.ceil(encoder.maxBytesPerChar());
-            decoder = charset.newDecoder();
+        Charset charset = Charset.forName("UTF-8");
+        encoder = charset.newEncoder();
+        maxBytesPerChar = (int) Math.ceil(encoder.maxBytesPerChar());
+        decoder = charset.newDecoder();
     }
-    
+
     private static final Logger logger = Logger.getLoggerFor(TypeCodex.class);
 
     public static BigDecimal readBigDecimalObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading BigDecimal from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         BigDecimal value;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -46,12 +46,10 @@ public class TypeCodex {
     }
 
     public static boolean readBoolean(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading boolean from {}", reader.getPosition());
         return reader.readBoolean();
     }
 
     public static Boolean readBooleanObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Boolean from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Boolean booleanValue;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -64,58 +62,10 @@ public class TypeCodex {
     }
 
     public static byte readByte(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading byte from {}", reader.getPosition());
         return reader.readByte();
     }
 
-    // public static SerialisableObject[] readObjectArray(ReaderAbstraction reader, Class<?> clazz,
-    // SofConfiguration sofConfiguration)
-    // throws SofException, IOException {
-    // int count = reader.readInt();
-    // SerialisableObject[] array = (SerialisableObject[]) Array.newInstance(clazz, count);
-    //
-    // for (int i = 0; i < count; i++) {
-    //
-    // int nullHint = reader.readByte();
-    // if (nullHint == DefaultSofWriter.NULL) {
-    // array[i] = null;
-    // }
-    // else {
-    //
-    // int objectType = SofSerialiser.readInt(reader);
-    // int length = SofSerialiser.readInt(reader);
-    //
-    // Class<? extends SerialisableObject> subclazz = sofConfiguration.resolve(objectType);
-    //
-    // SerialisableObject value;
-    // if (subclazz == null) {
-    // if (sofConfiguration.isAllowUnknownNestedTypes()) {
-    // // TODO : maybe we should be logging this or writing it to a
-    // // listener at least?
-    // reader.skip(length);
-    // value = null;
-    // }
-    // else {
-    // throw new SofException("Decode failed, sub-object type '{}' has not been registered",
-    // objectType);
-    // }
-    // }
-    // else {
-    // value = ReflectionUtils.instantiate(subclazz);
-    // DefaultSofReader sofReader = new DefaultSofReader(reader, sofConfiguration);
-    // value.read(sofReader);
-    // }
-    //
-    // array[i] = value;
-    // }
-    // }
-    //
-    // return array;
-    // }
-
     public static byte[] readByteArray(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading byte[] from {}", reader.getPosition());
-        // TODO : varint
         int length = reader.readInt();
         byte[] value;
         if (length == -1) {
@@ -129,7 +79,6 @@ public class TypeCodex {
     }
 
     public static Byte readByteObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Byte from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Byte byteValue;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -142,12 +91,10 @@ public class TypeCodex {
     }
 
     public static char readChar(ReaderAbstraction reader) throws IOException, SofException {
-        //logger.fine("Reading char from {}", reader.getPosition());
         return SofSerialiser.readChar(reader);
     }
 
     public static Character readCharacterObject(ReaderAbstraction reader) throws IOException, SofException {
-        //logger.fine("Reading Character from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Character characterValue;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -160,7 +107,6 @@ public class TypeCodex {
     }
 
     public static Date readDateObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Date from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Date value;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -174,12 +120,10 @@ public class TypeCodex {
     }
 
     public static double readDouble(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading double from {}", reader.getPosition());
         return reader.readDouble();
     }
 
     public static Double readDoubleObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Double from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Double doubleValue;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -193,12 +137,10 @@ public class TypeCodex {
     }
 
     public static float readFloat(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading float from {}", reader.getPosition());
         return reader.readFloat();
     }
 
     public static Float readFloatObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Float from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Float value;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -211,13 +153,11 @@ public class TypeCodex {
     }
 
     public static int readInt(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading int from {}", reader.getPosition());
         int value = SofSerialiser.readInt(reader);
         return value;
     }
 
     public static Integer readIntObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Integer from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Integer integer;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -231,13 +171,11 @@ public class TypeCodex {
     }
 
     public static long readLong(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading long from {}", reader.getPosition());
         long value = SofSerialiser.readLong(reader);
         return value;
     }
 
     public static Long readLongObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Long from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Long longValue;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -252,8 +190,6 @@ public class TypeCodex {
 
     public static SerialisableObject[] readNonUniformObjectArray(ReaderAbstraction reader, SofConfiguration sofConfiguration) throws IOException,
                     SofException {
-        //logger.fine("Reading non-uniform array from {}", reader.getPosition());
-
         int count = SofSerialiser.readInt(reader);
         SerialisableObject[] array = new SerialisableObject[count];
 
@@ -273,8 +209,6 @@ public class TypeCodex {
                 SerialisableObject value;
                 if (subclazz == null) {
                     if (sofConfiguration.isAllowUnknownNestedTypes()) {
-                        // TODO : maybe we should be logging this or writing it to a
-                        // listener at least?
                         reader.skip(length);
                         value = null;
                     }
@@ -305,9 +239,6 @@ public class TypeCodex {
 
     public static SerialisableObject readObject(int type, ReaderAbstraction reader, SofConfiguration sofConfiguration) throws SofException,
                     IOException {
-
-        //logger.fine("Reading SerialisableObject from {}", reader.getPosition());
-
         int length = SofSerialiser.readInt(reader);
 
         Class<? extends SerialisableObject> clazz = sofConfiguration.resolve(type);
@@ -332,12 +263,10 @@ public class TypeCodex {
     }
 
     public static short readShort(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading short from {}", reader.getPosition());
         return (short) SofSerialiser.readInt(reader);
     }
 
     public static Short readShortObject(ReaderAbstraction reader) throws IOException {
-        //logger.fine("Reading Short from {}", reader.getPosition());
         byte nullHint = reader.readByte();
         Short shortValue;
         if (nullHint == DefaultSofWriter.NULL) {
@@ -348,8 +277,8 @@ public class TypeCodex {
         }
 
         return shortValue;
-    }    
-    
+    }
+
     public static void writeString(WriterAbstraction writer, String string) throws IOException {
         if (string == null) {
             SofSerialiser.writeInt(writer, -1);
@@ -361,28 +290,25 @@ public class TypeCodex {
     }
 
     public static String readString(ReaderAbstraction reader) throws IOException, SofException {
-        //logger.fine("Reading String from {}", reader.getPosition());
         int length = SofSerialiser.readInt(reader);
         String value;
         if (length == -1) {
             value = null;
         }
         else {
-            
-            char[] data = new char[length];            
+
+            char[] data = new char[length];
             for (int i = 0; i < length; i++) {
                 data[i] = SofSerialiser.readChar(reader);
             }
-            
+
             CharSequence seq = java.nio.CharBuffer.wrap(data);
             value = seq.toString();
         }
         return value;
     }
 
-    
     public static String[] readStringArray(ReaderAbstraction reader) throws IOException, SofException {
-        //logger.fine("Reading String[] from {}", reader.getPosition());
         String[] value;
 
         int count = SofSerialiser.readInt(reader);
@@ -403,9 +329,6 @@ public class TypeCodex {
     public static SerialisableObject[] readUniformObjectArray(ReaderAbstraction reader,
                                                               Class<? extends SerialisableObject> clazz,
                                                               SofConfiguration sofConfiguration) throws SofException, IOException {
-
-        //logger.fine("Reading uniform object array from {}", reader.getPosition());
-
         int count = SofSerialiser.readInt(reader);
         int type = SofSerialiser.readInt(reader);
 
@@ -444,12 +367,10 @@ public class TypeCodex {
 
                 if (clazz != null) {
                     // Fudge a return value
-                    SerialisableObject[] array = (SerialisableObject[]) Array.newInstance(clazz, count);
-                    return array;
+                    return (SerialisableObject[]) Array.newInstance(clazz, count);
                 }
                 else {
-                    SerialisableObject[] array = new SerialisableObject[count];
-                    return array;
+                    return new SerialisableObject[count];
                 }
 
             }
@@ -458,9 +379,6 @@ public class TypeCodex {
             }
         }
         else {
-
-            // TODO : if we are forcing to people to provide the concrete class, why are we also
-            // encoding its type?
             if (clazz != null && !encodedClass.equals(clazz)) {
                 throw new SofException("Decode failed, uniform array encoded class '{}' was different from the suggested type passed in '{}'",
                                        encodedClass.getName(),
@@ -471,7 +389,6 @@ public class TypeCodex {
 
             for (int i = 0; i < count; i++) {
 
-                // TODO : shouldn't we just be calling a readObject method at this point?
                 SerialisableObject object;
 
                 int nullHint = reader.readByte();
@@ -479,9 +396,9 @@ public class TypeCodex {
                     object = null;
                 }
                 else {
-
-                    // This isn't actually used in the decode, but is vital if we need to skip it!
-                    int objectLength = SofSerialiser.readInt(reader);
+                    // The object length isn't actually used in the decode, but is vital if we need
+                    // to skip it!
+                    SofSerialiser.readInt(reader);
 
                     object = ReflectionUtils.instantiate(encodedClass);
                     DefaultSofReader sofReader = new DefaultSofReader(reader, sofConfiguration);
@@ -498,8 +415,7 @@ public class TypeCodex {
 
     public static void skipBigDecimalObject(ReaderAbstraction reader) throws IOException {
         byte nullHint = reader.readByte();
-        if (nullHint == DefaultSofWriter.NULL) {}
-        else {
+        if (nullHint != DefaultSofWriter.NULL) {
             reader.skip((int) SizeOf.longSize + (int) SizeOf.intSize);
         }
     }
@@ -520,10 +436,8 @@ public class TypeCodex {
     }
 
     public static void skipByteArray(ReaderAbstraction reader) throws IOException {
-        // TODO : varint
         int length = reader.readInt();
-        if (length == -1) {}
-        else {
+        if (length != -1) {
             reader.skip(length);
         }
     }
@@ -603,7 +517,9 @@ public class TypeCodex {
             int nullHint = reader.readByte();
             if (nullHint == DefaultSofWriter.NULL) {}
             else {
-                int objectType = SofSerialiser.readInt(reader);
+                // Object type isn't used
+                SofSerialiser.readInt(reader);
+
                 int length = SofSerialiser.readInt(reader);
                 reader.skip(length);
             }
@@ -642,12 +558,10 @@ public class TypeCodex {
 
     public static void skipStringArray(ReaderAbstraction reader) throws IOException {
         int count = SofSerialiser.readInt(reader);
-        if (count == -1) {}
-        else {
+        if (count != -1) {
             for (int i = 0; i < count; i++) {
                 int length = SofSerialiser.readInt(reader);
-                if (length == -1) {}
-                else {
+                if (length != -1) {
                     reader.skip(length);
                 }
             }
@@ -657,7 +571,9 @@ public class TypeCodex {
     public static void skipUniformObjectArray(ReaderAbstraction reader) throws IOException {
 
         int count = SofSerialiser.readInt(reader);
-        int type = SofSerialiser.readInt(reader);
+        
+        // Object type is not used
+        SofSerialiser.readInt(reader);
 
         for (int i = 0; i < count; i++) {
 
@@ -702,12 +618,6 @@ public class TypeCodex {
 
                     // First pass
                     serialisableObject.write(countingSofWriter);
-
-                    // TODO : at this stage shouldn't we be going back to the top most entry
-                    // point and
-                    // writing out a full object header again? That way we could
-                    // compress/encrypt object
-                    // internals?
 
                     // Write the object length
                     int objectLength = countingWriter.getLength();
@@ -776,12 +686,6 @@ public class TypeCodex {
 
                     // First pass
                     serialisableObject.write(countingSofWriter);
-
-                    // TODO : at this stage shouldn't we be going back to the top most entry
-                    // point and
-                    // writing out a full object header again? That way we could
-                    // compress/encrypt object
-                    // internals?
 
                     // Write the object length
                     int objectLength = countingWriter.getLength();

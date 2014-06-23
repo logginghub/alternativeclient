@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
+import com.logginghub.connector.common.messages.LogEventMessage;
 import com.logginghub.utils.Destination;
 import com.logginghub.utils.ExceptionPolicy;
 import com.logginghub.utils.ExceptionPolicy.Policy;
@@ -36,7 +37,7 @@ import com.logginghub.utils.WorkerThread;
  * 
  * @author admin
  */
-public class SocketConnection implements LoggingMessageSource, FilteredMessageSender, Destination<LogEvent>, QueueAwareLoggingMessageSender {
+public class SocketConnection implements LoggingMessageSource, Destination<LogEvent> {
     public enum SlowSendingPolicy {
         disconnect,
         block,
@@ -53,7 +54,7 @@ public class SocketConnection implements LoggingMessageSource, FilteredMessageSe
     private Object closeLock = new Object();
     private volatile boolean closing = false;
     private SlowSendingPolicy slowSendingPolicy = SlowSendingPolicy.disconnect;
-    private ExceptionPolicy exceptionPolicy = new ExceptionPolicy(Policy.Ignore);
+    private ExceptionPolicy exceptionPolicy = new ExceptionPolicy(Policy.Log);
     private Throttler throttler = new Throttler(10, TimeUnit.SECONDS);
 
     /**
@@ -322,7 +323,7 @@ public class SocketConnection implements LoggingMessageSource, FilteredMessageSe
                 exceptionPolicy.handle(e, "An exception was caught reading data from the stream");
             }
         }
-        catch (Throwable ioe) {
+        catch (Exception ioe) {
             logger.warn(ioe, "A non-io exception was caught processing a message");
         }
     }

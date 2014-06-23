@@ -1,7 +1,6 @@
 package com.logginghub.connector.common;
 
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -22,9 +21,7 @@ import com.logginghub.utils.TimeProvider;
  * 
  * @author admin
  */
-public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObject, TimeProvider {
-    private static final long serialVersionUID = 1L;
-
+public class DefaultLogEvent implements LogEvent, SerialisableObject, TimeProvider {
     private static String lineSeparator = (String) System.getProperty("line.separator");
 
     private int level;
@@ -57,9 +54,6 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
         sourceClassName = record.getSourceClassName();
         sourceMethodName = record.getSourceMethodName();
         message = record.getMessage();
-
-        // jshaw - todo - see if there is a better way to get the thread name
-        // from the record thread ID
         threadName = Thread.currentThread().getName();
 
         localCreationTimeMillis = record.getMillis();
@@ -166,7 +160,9 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
         PrintWriter pw = new PrintWriter(sw);
         sw.append(thrown.getMessage());
         sw.append(lineSeparator);
+        // NOSONAR
         thrown.printStackTrace(pw);
+        // NOSONAR        
         return sw.toString();
     }
 
@@ -256,9 +252,6 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
         }
         else {
             level = null;
-            // throw new
-            // RuntimeException(String.format("Dont know what Juli level to use for int value [%d]",
-            // levelValue));
         }
 
         return level;
@@ -330,55 +323,109 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
     }
 
     @Override public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
         DefaultLogEvent other = (DefaultLogEvent) obj;
         if (formattedException == null) {
             if (other.formattedException != null) return false;
         }
-        else if (!formattedException.equals(other.formattedException)) return false;
-        if (!Arrays.equals(formattedObject, other.formattedObject)) return false;
-        if (level != other.level) return false;
-        if (localCreationTimeMillis != other.localCreationTimeMillis) return false;
+        else if (!formattedException.equals(other.formattedException)) {
+            return false;
+        }
+        if (!Arrays.equals(formattedObject, other.formattedObject)) {
+            return false;
+        }
+        if (level != other.level) {
+            return false;
+        }
+        if (localCreationTimeMillis != other.localCreationTimeMillis) {
+            return false;
+        }
         if (loggerName == null) {
-            if (other.loggerName != null) return false;
+            if (other.loggerName != null) {
+                return false;
+            }
         }
-        else if (!loggerName.equals(other.loggerName)) return false;
+        else if (!loggerName.equals(other.loggerName)) {
+            return false;
+        }
         if (message == null) {
-            if (other.message != null) return false;
+            if (other.message != null) {
+                return false;
+            }
         }
-        else if (!message.equals(other.message)) return false;
+        else if (!message.equals(other.message)) {
+            return false;
+        }
         if (metadata == null) {
-            if (other.metadata != null) return false;
+            if (other.metadata != null) {
+                return false;
+            }
         }
-        else if (!metadata.equals(other.metadata)) return false;
-        if (pid != other.pid) return false;
-        if (sequenceNumber != other.sequenceNumber) return false;
+        else if (!metadata.equals(other.metadata)) {
+            return false;
+        }
+        if (pid != other.pid) {
+            return false;
+        }
+        if (sequenceNumber != other.sequenceNumber) {
+            return false;
+        }
         if (sourceAddress == null) {
-            if (other.sourceAddress != null) return false;
+            if (other.sourceAddress != null) {
+                return false;
+            }
         }
-        else if (!sourceAddress.equals(other.sourceAddress)) return false;
+        else if (!sourceAddress.equals(other.sourceAddress)) {
+            return false;
+        }
         if (sourceApplication == null) {
-            if (other.sourceApplication != null) return false;
+            if (other.sourceApplication != null) {
+                return false;
+            }
         }
-        else if (!sourceApplication.equals(other.sourceApplication)) return false;
+        else if (!sourceApplication.equals(other.sourceApplication)) {
+            return false;
+        }
         if (sourceClassName == null) {
-            if (other.sourceClassName != null) return false;
+            if (other.sourceClassName != null) {
+                return false;
+            }
         }
-        else if (!sourceClassName.equals(other.sourceClassName)) return false;
+        else if (!sourceClassName.equals(other.sourceClassName)) {
+            return false;
+        }
         if (sourceHost == null) {
-            if (other.sourceHost != null) return false;
+            if (other.sourceHost != null) {
+                return false;
+            }
         }
-        else if (!sourceHost.equals(other.sourceHost)) return false;
+        else if (!sourceHost.equals(other.sourceHost)) {
+            return false;
+        }
         if (sourceMethodName == null) {
-            if (other.sourceMethodName != null) return false;
+            if (other.sourceMethodName != null) {
+                return false;
+            }
         }
-        else if (!sourceMethodName.equals(other.sourceMethodName)) return false;
+        else if (!sourceMethodName.equals(other.sourceMethodName)) {
+            return false;
+        }
         if (threadName == null) {
-            if (other.threadName != null) return false;
+            if (other.threadName != null) {
+                return false;
+            }
         }
-        else if (!threadName.equals(other.threadName)) return false;
+        else if (!threadName.equals(other.threadName)) {
+            return false;
+        }
         return true;
     }
 
@@ -414,8 +461,6 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
         formattedException = reader.readString(13);
         formattedObject = reader.readStringArray(14);
         sequenceNumber = reader.readLong(15);
-        // FIXME : encode metadata
-        // metadata = reader.readObject(16);
     }
 
     public void write(SofWriter writer) throws SofException {
@@ -434,8 +479,6 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
         writer.write(13, formattedException);
         writer.write(14, formattedObject);
         writer.write(15, sequenceNumber);
-        // FIXME : encode metadata
-        // writer.write(15, metadata);
     }
 
     public void setMetadata(Metadata metadata) {
@@ -450,10 +493,10 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
             sizeof += 8;
         }
         else {
-            sizeof += 8; /* object reference */
-            sizeof += 12; /* string int fields */
-            sizeof += 4; /* array object reference */
-            sizeof += 14 + string.length() * 2; /* actual bytes */
+            sizeof += 8; // object reference
+            sizeof += 12; // string int fields
+            sizeof += 4; // array object reference
+            sizeof += 14 + string.length() * 2; // actual bytes
         }
 
         return sizeof;
@@ -517,17 +560,10 @@ public class DefaultLogEvent implements LogEvent, Serializable, SerialisableObje
             nonNullStrings++;
             lengths += formattedException.length();
         }
-        
+
         sizeof += (nonNullStrings * 36) + (lengths * 2);
 
-        // TODO: these are included
-        // sizeof += estimateSizeOf(formattedObject);
-        // sizeof += estimateSizeOf(metadata);
-
-        
-        
         return sizeof;
-
     }
 
     public long getTime() {

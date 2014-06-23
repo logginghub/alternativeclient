@@ -44,13 +44,17 @@ public class LatchFuture<T> implements Future<T> {
         return result;
     }
 
-    public T getWithDefaultTimeout() throws InterruptedException, ExecutionException, TimeoutException {
-        latch.await(Timeout.defaultTimeout.getMillis(), TimeUnit.MILLISECONDS);
+    public T getWithDefaultTimeout() throws InterruptedException, TimeoutException {
+        if(!latch.await(Timeout.getDefaultTimeout().getMillis(), TimeUnit.MILLISECONDS)) {
+            throw new TimeoutException("Timed out waiting on the latch");
+        }
         return result;
     }
 
-    public T get(Timeout timeout) throws InterruptedException, ExecutionException, TimeoutException {
-        latch.await(timeout.getMillis(), timeout.getUnits());
+    public T get(Timeout timeout) throws InterruptedException, TimeoutException {
+        if(!latch.await(timeout.getMillis(), timeout.getUnits())) {
+            throw new TimeoutException("Timed out waiting on the latch");
+        }
         return result;
     }
 

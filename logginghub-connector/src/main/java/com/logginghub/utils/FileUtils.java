@@ -627,7 +627,7 @@ public class FileUtils {
             FileOutputStream dest = new FileOutputStream(target);
             out = new ZipOutputStream(new BufferedOutputStream(dest));
             out.setMethod(ZipOutputStream.DEFLATED);
-            byte data[] = new byte[4096];
+            byte[] data = new byte[4096];
 
             FileInputStream fi = new FileInputStream(file);
             source = new BufferedInputStream(fi, 4096);

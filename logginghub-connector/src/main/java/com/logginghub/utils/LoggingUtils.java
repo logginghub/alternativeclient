@@ -14,13 +14,13 @@ import java.util.logging.Logger;
 
 import com.logginghub.connector.common.AppenderHelper;
 import com.logginghub.connector.common.LogEvent;
-import com.logginghub.connector.common.LogEventMessage;
 import com.logginghub.connector.common.LoggingMessageSenderException;
 import com.logginghub.connector.common.SocketClient;
 import com.logginghub.connector.common.SocketClientManager;
 import com.logginghub.connector.common.VLLogEvent;
+import com.logginghub.connector.common.messages.LogEventMessage;
 import com.logginghub.connector.jul.JULConnector;
-import com.logginghub.connector.jul.SingleLineFormatter;
+import com.logginghub.connector.jul.JULSingleLineFormatter;
 
 public class LoggingUtils {
     public static long sizeof(LogEvent event) {
@@ -175,7 +175,7 @@ public class LoggingUtils {
         com.logginghub.utils.Logger.setLevelFromSystemProperty();
         final String sourceApplication = System.getProperty("vllogging.sourceApplication", "<unknown application>");
 
-        String remote = System.getProperty("vllogging.remote");
+        String remote = System.getProperty("vllogging.remote", "localhost");
         if (remote != null) {
 
             final SocketClient socketClient = new SocketClient("VertexLabs-vlloggingAppender");
@@ -191,21 +191,13 @@ public class LoggingUtils {
                 e.printStackTrace();
             }
 
-            int pid = -1;
-            // Make a cautious attempt at getting the pid - we dont want things to
-            // blow up if this doesn't work though
-            try {
-                pid = AppenderHelper.getPID();
-            }
-            catch (Throwable t) {
-                t.printStackTrace();
-            }
+            int pid = AppenderHelper.getPID();
 
             final int finalPid = pid;
             final InetAddress finalHost = localHost;
 
             com.logginghub.utils.Logger.root().addStream(new LoggerStream() {
-                public void onNewLogEvent(com.logginghub.utils.LogEvent event) {
+                public void onNewLogEvent(com.logginghub.utils.LoggerEvent event) {
                     VLLogEvent vlevent = new VLLogEvent(event, finalPid, sourceApplication, finalHost);
                     try {
                         socketClient.send(new LogEventMessage(vlevent));
@@ -235,7 +227,7 @@ public class LoggingUtils {
         }
 
         ConsoleHandler consoleHandler = new ConsoleHandler();
-        consoleHandler.setFormatter(new SingleLineFormatter());
+        consoleHandler.setFormatter(new JULSingleLineFormatter());
         rootLogger.addHandler(consoleHandler);
 
         JULConnector socketHandler = new JULConnector();

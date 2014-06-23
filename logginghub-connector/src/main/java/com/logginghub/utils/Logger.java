@@ -290,7 +290,7 @@ public class Logger {
             setThreadContext(threadContextOverride);
         }
 
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         if (format != null) {
             event.setMessage(format(format, objects));
         }
@@ -311,7 +311,7 @@ public class Logger {
             setThreadContext(threadContextOverride);
         }
 
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage("null");
         event.setSourceClassName(StacktraceUtils.getCallingClassName(2));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(2));
@@ -329,7 +329,7 @@ public class Logger {
             setThreadContext(threadContextOverride);
         }
 
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(message);
         event.setSourceClassName(StacktraceUtils.getCallingClassName(2));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(2));
@@ -344,7 +344,7 @@ public class Logger {
         return StringUtils.repeat("  ", indent) + StringUtils.format(format, objects);
     }
 
-    private void logEvent(LogEvent event) {
+    private void logEvent(LoggerEvent event) {
 
         if (streams == null) {
             // TODO : I think the expectation is probably to use the parents streams in order?
@@ -395,10 +395,10 @@ public class Logger {
         root.setLevel(level);
     }
 
-    public LogEvent getCallerContext() {
+    public LoggerEvent getCallerContext() {
         // These should be 2, but for some reason I'd changed them to 3, so
         // something is wrong somewhere...
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setSourceClassName(StacktraceUtils.getCallingClassName(2));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(2));
         event.setThreadName(Thread.currentThread().getName());
@@ -407,8 +407,8 @@ public class Logger {
 
     }
 
-    public void logFromContext(LogEvent context, int level, String format, Object... objects) {
-        LogEvent event = new LogEvent();
+    public void logFromContext(LoggerEvent context, int level, String format, Object... objects) {
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(StringUtils.format(format, objects));
         event.setSourceClassName(context.getSourceClassName());
         event.setSourceMethodName(context.getSourceMethodName());
@@ -420,7 +420,7 @@ public class Logger {
     }
 
     public void warning(Throwable t) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(t.getMessage());
         event.setSourceClassName(StacktraceUtils.getCallingClassName(1));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(1));
@@ -433,7 +433,7 @@ public class Logger {
     }
 
     public void trace(Throwable t) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(t.getMessage());
         // Brought these guys down to 2 levels as we've not go the log call to
         // detail with
@@ -448,7 +448,7 @@ public class Logger {
     }
 
     public void info(Throwable t) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(t.getMessage());
         // Brought these guys down to 2 levels as we've not go the log call to
         // detail with
@@ -493,7 +493,7 @@ public class Logger {
     }
 
     public void log(int level, Throwable t, String format, Object... objects) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(StringUtils.format(format, objects));
         event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -506,7 +506,7 @@ public class Logger {
     }
 
     public void debug(Throwable t, String format, Object... objects) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(StringUtils.format(format, objects));
         event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -519,7 +519,7 @@ public class Logger {
     }
 
     public void warning(Throwable t, String format, Object... objects) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(StringUtils.format(format, objects));
         event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -533,7 +533,7 @@ public class Logger {
 
     public void severe(Throwable t, String format, Object... objects) {
         if ((level < 0 && root.level <= severe) || (level >= 0 && level <= severe)) {
-            LogEvent event = new LogEvent();
+            LoggerEvent event = new LoggerEvent();
             event.setMessage(StringUtils.format(format, objects));
             event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
             event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -547,7 +547,7 @@ public class Logger {
     }
 
     public void warn(Throwable t, String format, Object... objects) {
-        LogEvent event = new LogEvent();
+        LoggerEvent event = new LoggerEvent();
         event.setMessage(StringUtils.format(format, objects));
         event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
         event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -561,7 +561,7 @@ public class Logger {
 
     public void info(Throwable t, String format, Object... objects) {
         if ((level < 0 && root.level <= info) || (level >= 0 && level <= info)) {
-            LogEvent event = new LogEvent();
+            LoggerEvent event = new LoggerEvent();
             event.setMessage(StringUtils.format(format, objects));
             event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
             event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -576,7 +576,7 @@ public class Logger {
     
     public void fine(Throwable t, String format, Object... objects) {
         if ((level < 0 && root.level <= fine) || (level >= 0 && level <= fine)) {
-            LogEvent event = new LogEvent();
+            LoggerEvent event = new LoggerEvent();
             event.setMessage(StringUtils.format(format, objects));
             event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
             event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));
@@ -611,7 +611,7 @@ public class Logger {
 
     public void logStack(int level) {
         if (willLog(level)) {
-            LogEvent event = new LogEvent();
+            LoggerEvent event = new LoggerEvent();
             event.setMessage("");
             event.setSourceClassName(StacktraceUtils.getCallingClassName(3));
             event.setSourceMethodName(StacktraceUtils.getCallingMethodName(3));

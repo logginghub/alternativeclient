@@ -245,22 +245,6 @@ public class LogbackConnector extends AppenderBase<ILoggingEvent> implements Sta
         appenderHelper.setGCLogging(name);
     }
 
-    public boolean isStackTraceModuleEnabled() {
-        return appenderHelper.isStackTraceModuleEnabled();
-    }
-
-    public String getStackTraceModuleBroadcastInterval() {
-        return appenderHelper.getStackTraceModuleBroadcastInterval();
-    }
-
-    public void setStackTraceModuleBroadcastInterval(String string) {
-        appenderHelper.setStackTraceModuleBroadcastInterval(string);
-    }
-
-    public void setStackTraceModuleEnabled(boolean value) {
-        appenderHelper.setStackTraceModuleEnabled(value);
-    }
-
     public AppenderHelper getAppenderHelper() {
         return appenderHelper;
     }

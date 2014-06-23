@@ -8,8 +8,8 @@ import java.util.TimeZone;
 
 public class DateFormatFactory {
 
-    public static TimeZone utc = TimeZone.getTimeZone("UTC");
-    public static TimeZone local = TimeZone.getDefault();
+    public final static TimeZone utc = TimeZone.getTimeZone("UTC");
+    public final static TimeZone local = TimeZone.getDefault();
     
     public static List<DateFormat> getAllFormats(TimeZone timezone) {
         List<DateFormat> list = new ArrayList<DateFormat>();

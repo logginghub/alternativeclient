@@ -3,6 +3,8 @@ package com.logginghub.connector.common;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.logginghub.connector.common.messages.LogEventMessage;
+
 /**
  * Abstract helper that deals with the listener management for combined logging message and log
  * event sources.

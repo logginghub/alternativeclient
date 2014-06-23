@@ -14,10 +14,10 @@ import com.logginghub.utils.StringUtils;
  */
 public class VLLogEvent extends BaseLogEvent {
 
-    private com.logginghub.utils.LogEvent event;
+    private com.logginghub.utils.LoggerEvent event;
     private static String lineSeparator = StringUtils.newline;
 
-    public VLLogEvent(com.logginghub.utils.LogEvent event, int pid, String sourceApplication, InetAddress sourceHost) {
+    public VLLogEvent(com.logginghub.utils.LoggerEvent event, int pid, String sourceApplication, InetAddress sourceHost) {
         this.event = event;
         setSourceApplication(sourceApplication);
         setSourceAddress(sourceHost.getHostAddress());

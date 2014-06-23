@@ -219,16 +219,6 @@ public class JULConnector extends Handler implements PropertyChangeListener, Sta
             appenderHelper.setChannel(channel);
         }
         
-        String stackTraceModuleBroadcastInterval = manager.getProperty(cname + ".stackTraceModuleBroadcastInterval");
-        if(stackTraceModuleBroadcastInterval != null) {
-            setStackTraceModuleBroadcastInterval(stackTraceModuleBroadcastInterval);
-        }
-        
-        String stackTraceModuleEnabled = manager.getProperty(cname + ".stackTraceModuleEnabled");
-        if(stackTraceModuleEnabled != null) {
-            setStackTraceModuleEnabled(Boolean.parseBoolean(stackTraceModuleEnabled));
-        }
-
         String gatherCallerDetails = manager.getProperty(cname + ".gatherCallerDetails");
         if (gatherCallerDetails != null) {
             setGatheringCallerDetails(Boolean.parseBoolean(gatherCallerDetails));
@@ -390,19 +380,4 @@ public class JULConnector extends Handler implements PropertyChangeListener, Sta
         appenderHelper.setFailureDelay(failureDelay);
     }
     
-    public boolean isStackTraceModuleEnabled() {
-        return appenderHelper.isStackTraceModuleEnabled();
-    }
-
-    public String getStackTraceModuleBroadcastInterval() {
-        return appenderHelper.getStackTraceModuleBroadcastInterval();
-    }
-
-    public void setStackTraceModuleBroadcastInterval(String string) {
-        appenderHelper.setStackTraceModuleBroadcastInterval(string);
-    }
-
-    public void setStackTraceModuleEnabled(boolean value) {
-        appenderHelper.setStackTraceModuleEnabled(value);
-    }
 }

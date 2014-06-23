@@ -14,19 +14,19 @@ public class TimeUtils {
     
     private static TimeProvider timeProvider = new SystemTimeProvider();
 
-    public static long seconds = 1000;
-    public static long minutes = seconds * 60;
-    public static long tenMinutes = minutes * 10;
-    public static long twentyMinutes = minutes * 20;
-    public static long halfHours = minutes * 30;
-    public static long hours = minutes * 60;
-    public static long twoHours = hours * 2;
-    public static long threeHours = hours * 3;
-    public static long sixHours = hours * 6;
-    public static long twelveHours = hours * 12;
-    public static long days = hours * 24;
-    public static long weeks = days * 7;
-    public static long months = weeks * 4;
+    public static final long seconds = 1000;
+    public static final long minutes = seconds * 60;
+    public static final long tenMinutes = minutes * 10;
+    public static final long twentyMinutes = minutes * 20;
+    public static final long halfHours = minutes * 30;
+    public static final long hours = minutes * 60;
+    public static final long twoHours = hours * 2;
+    public static final long threeHours = hours * 3;
+    public static final long sixHours = hours * 6;
+    public static final long twelveHours = hours * 12;
+    public static final long days = hours * 24;
+    public static final long weeks = days * 7;
+    public static final long months = weeks * 4;
 
     public static String toDateTimeString(long value) {
         return DateFormatFactory.getDateThenTime(DateFormatFactory.utc).format(new Date(value));

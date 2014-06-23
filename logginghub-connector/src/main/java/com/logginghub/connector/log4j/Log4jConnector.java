@@ -11,11 +11,11 @@ import com.logginghub.connector.common.AppenderHelperCustomisationInterface;
 import com.logginghub.connector.common.AppenderHelperEventConvertor;
 import com.logginghub.connector.common.EventSnapshot;
 import com.logginghub.connector.common.LogEvent;
-import com.logginghub.connector.common.LogEventMessage;
 import com.logginghub.connector.common.LoggingMessageSenderException;
 import com.logginghub.connector.common.PublishingListener;
 import com.logginghub.connector.common.SocketClient;
 import com.logginghub.connector.common.SocketConnection.SlowSendingPolicy;
+import com.logginghub.connector.common.messages.LogEventMessage;
 import com.logginghub.utils.CpuLogger;
 import com.logginghub.utils.GCWatcher;
 import com.logginghub.utils.HeapLogger;
@@ -244,20 +244,4 @@ public class Log4jConnector extends AppenderSkeleton implements StandardAppender
         appenderHelper.setMaxDispatchQueueSize(maximumQueuedMessages);
     }
 
-    public boolean isStackTraceModuleEnabled() {
-        return appenderHelper.isStackTraceModuleEnabled();
-    }
-
-    public String getStackTraceModuleBroadcastInterval() {
-        return appenderHelper.getStackTraceModuleBroadcastInterval();
-    }
-
-    public void setStackTraceModuleBroadcastInterval(String string) {
-        appenderHelper.setStackTraceModuleBroadcastInterval(string);
-    }
-
-    public void setStackTraceModuleEnabled(boolean value) {
-        appenderHelper.setStackTraceModuleEnabled(value);
-    }
-    
 }

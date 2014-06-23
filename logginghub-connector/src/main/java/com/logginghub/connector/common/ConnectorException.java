@@ -1,30 +1,21 @@
 package com.logginghub.connector.common;
 
-public class ConnectorException extends Exception
-{
+public class ConnectorException extends Exception {
 
-    public ConnectorException()
-    {
+    public ConnectorException() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-    public ConnectorException(String message, Throwable cause)
-    {
+    public ConnectorException(String message, Throwable cause) {
         super(message, cause);
-        // TODO Auto-generated constructor stub
     }
 
-    public ConnectorException(String message)
-    {
+    public ConnectorException(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
-    public ConnectorException(Throwable cause)
-    {
+    public ConnectorException(Throwable cause) {
         super(cause);
-        // TODO Auto-generated constructor stub
     }
 
 }

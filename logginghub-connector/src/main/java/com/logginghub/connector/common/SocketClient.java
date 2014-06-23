@@ -20,6 +20,7 @@ import com.logginghub.connector.common.messages.EventSubscriptionRequestMessage;
 import com.logginghub.connector.common.messages.EventSubscriptionResponseMessage;
 import com.logginghub.connector.common.messages.FilterRequestMessage;
 import com.logginghub.connector.common.messages.HistoricalIndexRequest;
+import com.logginghub.connector.common.messages.LogEventMessage;
 import com.logginghub.connector.common.messages.RequestResponseMessage;
 import com.logginghub.connector.common.messages.SubscriptionRequestMessage;
 import com.logginghub.connector.common.messages.SubscriptionResponseMessage;
