@@ -1,54 +1,105 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.logginghub</groupId>
-		<artifactId>logginghub-parent</artifactId>
-		<version>1.3.14</version>
-	</parent>
+    <parent>
+        <groupId>com.logginghub</groupId>
+        <artifactId>logginghub-parent</artifactId>
+        <version>1.3.14</version>
+    </parent>
 
-	<artifactId>logginghub-connector</artifactId>
-	<name>LoggingHub Connector</name>
-	<description>The connector module contains the adaptors to send events from the major Java logging frameworks into LoggingHub.</description>
+    <artifactId>logginghub-connector</artifactId>
+    <name>LoggingHub Connector</name>
+    <description>The connector module contains the adaptors to send events from the major Java logging frameworks into LoggingHub.</description>
 
-	<dependencies>
-		
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+    <dependencies>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.14</version>
             <scope>provided</scope>
-		</dependency>
- 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.0.7</version>
-			<scope>provided</scope>
-		</dependency>
+        </dependency>
 
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.7</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.0.7</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>backport-util-concurrent</groupId>
-			<artifactId>backport-util-concurrent</artifactId>
-			<version>3.1</version>
-		</dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.0.7</version>
+            <scope>provided</scope>
+        </dependency>
 
-	</dependencies>
+        <dependency>
+            <groupId>backport-util-concurrent</groupId>
+            <artifactId>backport-util-concurrent</artifactId>
+            <version>3.1</version>
+        </dependency>
 
-	<scm>
-	    <!-- TODO : sort these out -->
-		<connection>https://github.com/LoggingHub/core</connection>
-		<url>https://github.com/LoggingHub/core</url>
-	</scm>
+    </dependencies>
 
+    <scm>
+        <connection>https://github.com/LoggingHub/core</connection>
+        <url>https://github.com/LoggingHub/core</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>bintray-logginghub-Core-logginghub-connector</id>
+            <name>logginghub-Core-logginghub-connector</name>
+            <url>https://api.bintray.com/maven/logginghub/Core/logginghub-connector</url>
+        </repository>
+    </distributionManagement>
+
+    <developers>
+        <developer>
+            <id>jshaw</id>
+            <name>James Shaw</name>
+            <email>no.chance@spam.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

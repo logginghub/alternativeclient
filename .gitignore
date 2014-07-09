@@ -1,3 +1,5 @@
 */.project
 .project
 logginghub-integrationtests/.settings/
+logginghub-connector/target
+logginghub-connector/target/*
